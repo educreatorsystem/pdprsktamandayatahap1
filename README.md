@@ -1,41 +1,28 @@
-# Tugasan PdPR — SK Taman Daya
+# Tugasan PdPR SK Taman Daya — GitHub Pages + CSV
 
-Portal murid, guru dan rumusan kelas bertema permainan Mario, lengkap dengan lencana sekolah dan bunyi interaktif. Versi ini boleh diterbitkan terus menggunakan GitHub Pages tanpa proses build.
+Versi terkini mempunyai lencana sekolah, bunyi permainan dan bacaan tugasan/penghantaran terus daripada CSV Google Sheet. Tiada proses build diperlukan.
 
-## Cara terbitkan
+## Terbitkan / kemas kini
 
-1. Ekstrak ZIP ini pada komputer.
-2. Cipta repositori GitHub, contohnya `pdpr-sk-taman-daya`. Untuk GitHub Free, gunakan repositori **Public** bagi GitHub Pages.
-3. Dalam repositori, pilih **Add file → Upload files**. Muat naik **isi** folder yang diekstrak, kemudian **Commit changes**. Jangan muat naik ZIP sahaja. Pastikan `index.html` terletak terus di peringkat utama repositori, bersama `app.js` dan `style.css`; bukan dalam subfolder.
-4. Buka **Settings → Pages**.
-5. Dalam **Build and deployment**, pilih **Source: Deploy from a branch**.
-6. Pilih **Branch: main**, folder **/(root)**, kemudian klik **Save**. Jika nama branch utama berbeza, pilih branch yang mengandungi fail tadi.
-7. Tunggu deployment siap. Pada halaman Pages, klik **Visit site** untuk membuka URL sebenar laman anda.
+1. Ekstrak ZIP. Muat naik semua fail di dalamnya ke bahagian utama repositori GitHub; jangan muat naik ZIP sahaja.
+2. Pastikan `index.html`, `app.js`, **`data.js`**, `style.css`, `roster.json` dan `lencana-sk-taman-daya.jpeg` berada bersama di root. Fail `data.js` baharu wajib dimuat naik.
+3. Commit perubahan. Dalam **Settings → Pages**, pilih **Deploy from a branch → main → /(root) → Save**. Jika branch utama anda bernama lain, pilih branch tersebut.
+4. Apabila deployment selesai, klik **Visit site**. Untuk GitHub Free, repositori Public diperlukan bagi GitHub Pages.
 
-Panduan rasmi: [Konfigurasi sumber GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) dan [Mencipta laman GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site).
+[Dokumentasi GitHub Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site)
 
-## Fail yang perlu dimuat naik
+## Sambungan data
 
-- `index.html` — halaman utama. Nama fail mestilah huruf kecil seperti ini.
-- `app.js` — fungsi sistem dan bunyi permainan.
-- `style.css` — tema dan susun atur responsif.
-- `roster.json` — salinan senarai nama untuk fallback dan mod demo.
-- `lencana-sk-taman-daya.jpeg` — lencana sekolah.
-- `.nojekyll` — melayani fail statik terus.
-- `README.md` — panduan ini.
+URL CSV tugasan dan CSV penghantaran yang diberikan telah ditetapkan sebagai lalai. Status pada portal menunjukkan **CSV Google Sheet**. Data cache boleh dipaparkan segera, bacaan baharu berjalan di latar, dan tapisan tidak memerlukan panggilan Apps Script.
 
-## Sambungan Google Sheet dan gambar Drive
+Gunakan **⚙ Tetapan sambungan** untuk menukar URL CSV atau Apps Script pada pelayar semasa. Untuk menukar lalai bagi semua pengguna, ubah `TASKS_CSV`, `SUBMISSIONS_CSV` atau `DEFAULT_API` dalam `app.js` dan commit semula.
 
-GitHub Pages menyediakan antaramuka. Simpanan dan bacaan data sebenar terus menggunakan Web App Apps Script yang diberikan. URL asal sudah ditetapkan dalam `app.js`. Selepas laman dibuka, gunakan ikon **⚙ Tetapan sambungan** jika anda perlu menukar URL deployment. Tetapan yang diubah melalui pelayar hanya terpakai pada pelayar itu; untuk menukar lalai bagi semua pengguna, kemas kini nilai `DEFAULT_API` dalam `app.js` dan commit semula.
+Login, simpanan dan butiran gambar kekal melalui Apps Script. `Code.gs` disediakan berasingan dan tidak perlu ditukar untuk kemas kini bacaan ini jika backend sistem sudah dipasang. Rekod yang telah disahkan berjaya disimpan dikekalkan secara tempatan sehingga penerbitan CSV menyusul.
 
-Backend Apps Script perlu menggunakan `Code.gs` sistem ini dan deployment Web App yang membenarkan akses pengguna sasaran. Kod backend tidak termasuk dalam ZIP laman ini; ia disediakan berasingan untuk dipasang dalam editor Apps Script. Fail backend tidak dijalankan oleh GitHub Pages.
+Kata laluan guru ditetapkan pada **Apps Script → Project Settings → Script Properties → TEACHER_PASSWORD**. Mod demo menggunakan simulasi yang berasingan dan rekod demo hanya disimpan dalam pelayar.
 
-Kata laluan guru sebenar ditetapkan dalam **Apps Script → Project Settings → Script Properties → TEACHER_PASSWORD**. Jangan masukkan kata laluan sebenar ke dalam fail laman. Literal kata laluan pada fungsi demo hanya digunakan oleh simulasi demo.
+## Masa kemas kini
 
-Jika sambungan belum aktif, portal memaparkan status tersebut dan menyediakan **Cuba mod demo**. Rekod demo hanya disimpan pada pelayar, tidak dihantar ke Google Sheet atau Drive.
+Segar semula automatik berjalan setiap 60 saat ketika laman kelihatan. Butang **Segar semula** meminta bacaan baharu tanpa menutup paparan. Google boleh mengambil beberapa minit untuk mengemas kini CSV yang diterbitkan. Pengguna pada pelayar lain melihat perubahan selepas penerbitan itu dan bacaan seterusnya. Aktifkan **Automatically republish when changes are made** pada tetapan Publish to web Google Sheet.
 
-Jika sekatan CORS atau polisi akaun Google menghalang API pada domain GitHub Pages, semak deployment Apps Script. Fail `Index.html` kendiri yang dibekalkan berasingan boleh digunakan untuk membuka seluruh portal melalui Apps Script dan komunikasi `google.script.run`.
-
-## Mengemas kini laman
-
-Gantikan fail yang berubah di repositori dan commit. GitHub Pages akan menerbitkan perubahan berdasarkan branch yang dipilih. Laluan aset adalah relatif supaya laman turut berfungsi pada URL repositori.
+Baca `PANDUAN-CSV.md` untuk butiran tingkah laku cache, status penghantaran dan penyelarasan selepas simpanan.
