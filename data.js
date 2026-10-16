@@ -2,7 +2,7 @@
 (function(root){
  'use strict';
  const TASK_FIELDS=['id','date','className','subject','teacher','title','instructions','message','createdAt','updatedAt','deleted'];
- const SUB_FIELDS=['id','taskId','className','studentName','message','photos','submittedAt','stars','marks','feedback','reviewedAt'];
+ const SUB_FIELDS=['id','taskId','className','studentName','message','photos','submittedAt','stars','marks','feedback','reviewedAt','photosPending'];
  function parseCSV(text){
   if(typeof text!=='string'||/^\s*</.test(text))throw new Error('Pautan CSV memulangkan halaman HTML. Semak tetapan penerbitan Sheet.');
   text=text.replace(/^\uFEFF/,'');let rows=[],row=[],cell='',quoted=false;
@@ -21,6 +21,49 @@
   if(new Set(headers).size!==headers.length)throw new Error('Tajuk lajur CSV berulang.');
   return {headers,rows:rows.map(values=>Object.fromEntries(headers.map((h,i)=>[h,values[i]??''])))};
  }
+
+ // Accept both the original JSON metadata and legacy Sheet cells containing Drive URLs.
+ function googleFileUrl(value){
+  try{const u=new URL(String(value||'').trim());return u.protocol==='https:'&&!u.username&&!u.password&&(['drive.google.com','docs.google.com','drive.usercontent.google.com'].includes(u.hostname)||/^lh\d+\.googleusercontent\.com$/.test(u.hostname))?u.href:''}catch(_){return ''}
+ }
+ function driveFileId(value){
+  const text=String(value||'').trim();if(/^[A-Za-z0-9_-]{10,200}$/.test(text))return text;
+  const safe=googleFileUrl(text);if(!safe)return '';const u=new URL(safe),path=u.pathname.match(/\/(?:file\/)?d\/([A-Za-z0-9_-]+)/);
+  const id=path?.[1]||u.searchParams.get('id')||'';return /^[A-Za-z0-9_-]{5,200}$/.test(id)?id:'';
+ }
+ function normalizePhotos(value){
+  const result=[],seen=new Set();
+  const add=item=>{
+   if(result.length>=4||item==null)return;
+   if(Array.isArray(item)){item.forEach(add);return}
+   if(typeof item==='string'){
+    const text=item.trim();if(!text)return;
+    if(/^[\[{"]/.test(text)){try{add(JSON.parse(text));return}catch(_){}}
+    const links=text.match(/https:\/\/[^\s<>"'\[\],;]+/gi)||[];
+    if(links.length){links.forEach(url=>add({url}));return}
+    if(/^[A-Za-z0-9_-]{10,200}$/.test(text))add({id:text});return;
+   }
+   if(typeof item!=='object')return;
+   const url=googleFileUrl(item.url||item.link||item.webViewLink||item.driveUrl||''),rawId=String(item.id||item.fileId||'').trim();
+   const id=/^[A-Za-z0-9_-]{1,200}$/.test(rawId)?rawId:driveFileId(url);
+   if(!id&&!url)return;
+   const key=id||url;if(seen.has(key))return;seen.add(key);
+   result.push({...(id?{id}:{}),name:String(item.name||item.filename||'Gambar '+(result.length+1)),mimeType:String(item.mimeType||'image/jpeg'),...(url?{url}:{})});
+  };add(value);return result;
+ }
+ function photoDriveLink(photo){
+  const url=googleFileUrl(photo?.url),id=photo?.id||driveFileId(url);
+  if(url&&new URL(url).hostname==='drive.google.com'&&/\/file\/d\//.test(new URL(url).pathname))return url;
+  if(id&&/^[A-Za-z0-9_-]{1,200}$/.test(id)){const target=new URL('https://drive.google.com/file/d/'+id+'/view');if(url){const key=new URL(url).searchParams.get('resourcekey');if(key)target.searchParams.set('resourcekey',key)}return target.href}
+  return url;
+ }
+ function photoPreviewUrl(photo){
+  const url=googleFileUrl(photo?.url);if(!url)return '';
+  const u=new URL(url);if(/^lh\d+\.googleusercontent\.com$/.test(u.hostname))return url;
+  const id=photo?.id||driveFileId(url);if(!id)return '';
+  const thumbnail=new URL('https://drive.google.com/thumbnail');thumbnail.searchParams.set('id',id);thumbnail.searchParams.set('sz','w1600');const key=u.searchParams.get('resourcekey');if(key)thumbnail.searchParams.set('resourcekey',key);return thumbnail.href;
+ }
+
  function normalizedRows(text,kind){
   const csv=parseCSV(text),required=kind==='tasks'?['id','date','className','subject','teacher','title','instructions']:['id','taskId','className','studentName','submittedAt'];
   if(!required.every(h=>csv.headers.includes(h)))throw new Error('Lajur CSV '+(kind==='tasks'?'tugasan':'penghantaran')+' tidak sepadan.');
@@ -34,9 +77,7 @@
     item.deleted=/^(true|1|yes)$/i.test(item.deleted)?'true':'false';
    }else{
     if(!item.taskId||!item.className||!item.studentName||!item.submittedAt)throw new Error('Rekod penghantaran CSV tidak lengkap.');
-    let photos=[];try{photos=JSON.parse(raw.photos||'[]')}catch(_){}
-    // Keep only Drive metadata; image content is loaded on demand via Apps Script.
-    item.photos=Array.isArray(photos)?photos.filter(p=>p&&p.id).slice(0,4).map(p=>({id:String(p.id),name:String(p.name||'Gambar'),mimeType:String(p.mimeType||'image/jpeg')})):[];
+    item.photos=normalizePhotos(raw.photos);item.photosPending=false;
     item.stars=String(Math.max(0,Math.min(5,Math.floor(Number(item.stars)||0))));
    }
    byId.set(item.id,item);
@@ -73,7 +114,7 @@
   }
   snapshot(){
    this.expirePending();const merged={};
-   for(const kind of ['tasks','submissions']){const map=new Map(this.raw[kind].map(row=>[row.id,row]));for(const [id,p] of Object.entries(this.pending[kind]))map.set(id,{...(map.get(id)||{}),...p.record});merged[kind]=[...map.values()]}
+   for(const kind of ['tasks','submissions']){const map=new Map(this.raw[kind].map(row=>[row.id,row]));for(const [id,p] of Object.entries(this.pending[kind])){const old=map.get(id),record={...(old||{}),...p.record};if(kind==='submissions'&&old?.photos?.length&&!p.record.photos?.length){record.photos=old.photos;record.photosPending=false}map.set(id,record)};merged[kind]=[...map.values()]}
    return {tasks:merged.tasks.filter(t=>t.deleted!=='true'),submissions:merged.submissions,tasksAt:this.times.tasks,submissionsAt:this.times.submissions,hasTasks:this.times.tasks!==null,hasSubmissions:this.times.submissions!==null,refreshing:this.refreshing,errors:{...this.errors},pendingCount:Object.keys(this.pending.tasks).length+Object.keys(this.pending.submissions).length};
   }
   emit(){try{this.onChange(this.snapshot())}catch(e){if(root.console)root.console.warn('Paparan CSV belum dikemas kini.',e)}}
@@ -103,7 +144,7 @@
    }else if(action==='deleteTask'){
     kind='tasks';record={id:data.id,deleted:'true',updatedAt:now};
    }else if(action==='submitTask'){
-    if(!r.id)return;kind='submissions';record={id:r.id,taskId:data.taskId,className:data.className,studentName:data.studentName,message:data.message||'',photos:[],submittedAt:r.submittedAt||now,stars:'0',marks:'',feedback:'',reviewedAt:''};
+    if(!r.id)return;kind='submissions';record={id:r.id,taskId:data.taskId,className:data.className,studentName:data.studentName,message:data.message||'',photos:normalizePhotos(r.photos),photosPending:!!data.photos?.length&&!normalizePhotos(r.photos).length,submittedAt:r.submittedAt||now,stars:'0',marks:'',feedback:'',reviewedAt:''};
    }else if(action==='gradeSubmission'){
     kind='submissions';const old=current.submissions.find(s=>s.id===data.id);if(!old)return;
     record={...old,stars:String(data.stars),marks:String(data.marks??''),feedback:data.feedback||'',reviewedAt:r.reviewedAt||now};
@@ -114,6 +155,6 @@
    this.pending[kind][record.id]={record,confirmedAt:this.now()};this.persist();this.emit();
   }
  }
- root.PDPRData={CSVStore,parseCSV,normalizedRows};
+ root.PDPRData={CSVStore,parseCSV,normalizedRows,normalizePhotos,photoDriveLink,photoPreviewUrl};
  if(typeof module!=='undefined'&&module.exports)module.exports=root.PDPRData;
 })(typeof window!=='undefined'?window:globalThis);

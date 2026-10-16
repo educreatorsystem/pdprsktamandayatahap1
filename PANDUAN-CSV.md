@@ -1,6 +1,6 @@
 # Kemas kini bacaan CSV — Tugasan PdPR SK Taman Daya
 
-Versi ini membaca senarai tugasan dan penghantaran terus daripada dua pautan CSV Google Sheet yang diberikan. Login guru, simpan/edit/padam tugasan, penghantaran murid, respon dan gambar terus menggunakan Apps Script sedia ada.
+Versi ini membaca senarai tugasan dan penghantaran terus daripada dua pautan CSV Google Sheet yang diberikan. Login guru, simpan/edit/padam tugasan, penghantaran murid, respon serta muat naik gambar terus menggunakan Apps Script sedia ada. Gambar boleh dipaparkan terus daripada pautan CSV seperti diterangkan dalam `PANDUAN-GAMBAR-DRIVE.md`.
 
 ## Pasang pada GitHub Pages
 
@@ -31,7 +31,7 @@ Selepas simpanan disahkan, paparan dan cache tempatan mengekalkan rekod baharu i
 
 Apabila CSV memaparkan rekod yang sepadan atau suntingan pelayan yang lebih baharu, salinan sementara itu diselaraskan. Penampan rekod disahkan dihadkan kepada 24 jam; pastikan CSV dan Apps Script merujuk Sheet yang sama serta penerbitan automatik diaktifkan. Penampan pada satu pelayar tidak dihantar kepada pelayar lain; pengguna lain melihat perubahan apabila CSV diterbitkan.
 
-Gambar tidak dimuat turun bersama setiap senarai. Gambar dibaca melalui Apps Script apabila **Lihat rekod** atau **Semak** dibuka. Butiran yang sama boleh digunakan semula dalam memori sehingga 30 saat bagi identiti sesi yang sama. Cache metadata tidak menyimpan kandungan gambar base64, kata laluan atau token sesi.
+Gambar tidak dimuat turun bersama setiap senarai. Pautan gambar terus dibaca daripada CSV apabila **Pratonton** dibuka. Metadata yang hanya mempunyai ID fail dibaca melalui Apps Script yang disahkan. Pautan **Buka di Google Drive** tersedia walaupun pratonton lambat atau gagal. Butiran yang sama boleh digunakan semula dalam memori sehingga 30 saat bagi identiti sesi yang sama. Cache metadata tidak menyimpan kandungan gambar base64, kata laluan atau token sesi.
 
 Jika CSV penghantaran belum pernah berjaya dimuatkan, sistem tidak menanda semua murid sebagai “Tidak hantar”. Ia memaparkan status rekod belum tersedia dan menunggu bacaan tersebut. Jika bacaan baharu gagal tetapi cache sudah ada, paparan lama dikekalkan dengan mesej ralat pada bar sambungan.
 

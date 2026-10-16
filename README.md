@@ -17,7 +17,7 @@ URL CSV tugasan dan CSV penghantaran yang diberikan telah ditetapkan sebagai lal
 
 Gunakan **⚙ Tetapan sambungan** untuk menukar URL CSV atau Apps Script pada pelayar semasa. Untuk menukar lalai bagi semua pengguna, ubah `TASKS_CSV`, `SUBMISSIONS_CSV` atau `DEFAULT_API` dalam `app.js` dan commit semula.
 
-Login, simpanan dan butiran gambar kekal melalui Apps Script. `Code.gs` disediakan berasingan dan tidak perlu ditukar untuk kemas kini bacaan ini jika backend sistem sudah dipasang. Rekod yang telah disahkan berjaya disimpan dikekalkan secara tempatan sehingga penerbitan CSV menyusul.
+Login, simpanan dan gambar peribadi yang hanya mempunyai ID fail menggunakan Apps Script. Pautan gambar terus dalam CSV boleh dipratonton tanpa menunggu Apps Script. `Code.gs` disediakan berasingan dan tidak perlu ditukar untuk kemas kini bacaan ini jika backend sistem sudah dipasang. Rekod yang telah disahkan berjaya disimpan dikekalkan secara tempatan sehingga penerbitan CSV menyusul.
 
 Kata laluan guru ditetapkan pada **Apps Script → Project Settings → Script Properties → TEACHER_PASSWORD**. Mod demo menggunakan simulasi yang berasingan dan rekod demo hanya disimpan dalam pelayar.
 
@@ -34,3 +34,7 @@ Versi ini turut membetulkan sesi guru yang tamat ketika membuka hasil kerja muri
 ## Semakan pantas
 
 Rekod penghantaran kini mempunyai bintang, markah dan mesej terus pada senarai, carian murid, tapisan status dan 12 rekod setiap halaman. Gambar hanya diminta apabila **Pratonton** ditekan. Dialog menyertakan **Besarkan gambar** dan **Simpan & seterusnya**. Baca `PANDUAN-SEMAKAN-PANTAS.md`.
+
+## Gambar Google Drive
+
+Pembaca CSV kini menerima pautan terus Googleusercontent dan Google Drive dalam `photos`, selain JSON metadata. **Buka di Google Drive** tersedia pada kad dan di atas gambar. Pratonton pautan terus tidak perlu menunggu Apps Script. Selepas memuat naik kemas kini, muat semula laman dan klik **Segar semula**. Baca `PANDUAN-GAMBAR-DRIVE.md`.

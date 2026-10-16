@@ -17,7 +17,7 @@ Sekurang-kurangnya satu bintang, markah atau mesej perlu diisi sebelum penilaian
 
 - Senarai memaparkan maksimum **12 kad** setiap halaman. Carian dan tapisan dilakukan pada metadata CSV yang telah dibaca.
 - Senarai tidak memuatkan gambar hasil kerja secara automatik. Menukar halaman atau tapisan tidak mengambil gambar daripada Apps Script.
-- Hanya hasil kerja murid yang dipilih diminta melalui `getSubmission`. Maksimum empat lampiran murid tersebut dikembalikan oleh backend sedia ada.
+- Pautan gambar terus dalam CSV dipaparkan selepas **Pratonton** ditekan tanpa menunggu Apps Script. Metadata yang hanya mempunyai ID fail menggunakan `getSubmission` untuk membaca gambar melalui backend yang disahkan. Maksimum empat lampiran ditunjukkan. Pautan **Buka di Google Drive** tersedia pada kad dan di atas pratonton.
 - Cache butiran gambar dibataskan kepada tiga rekod dengan tempoh guna semula 30 saat. Sesi baharu atau simpanan penilaian mengosongkan cache tersebut.
 - Tiada permintaan gambar bagi murid seterusnya sehingga guru membuka rekod itu atau menekan **Simpan & seterusnya**.
 
@@ -45,3 +45,5 @@ Kemas kini paparan semakan pantas menggunakan tindakan backend yang sedia ada. J
 - Ujian pelayar menggunakan 26 rekod rekaan: 12 kad dan tiada permintaan gambar pada senarai awal; draf kekal merentas halaman; penilaian disimpan selepas login semula; gambar dibuka atas permintaan; pertukaran gambar tidak mengulangi permintaan backend; simpan dan seterusnya membuka murid berikutnya; rekod tanpa gambar tidak meminta gambar; pembesaran berfungsi.
 
 Tiada rekod Google Sheet, gambar Drive atau deployment Google sebenar diubah semasa ujian ini. Screenshot yang dibekalkan menggunakan data ujian berlabel.
+
+Pembetulan format pautan gambar diterangkan dalam `PANDUAN-GAMBAR-DRIVE.md`. Gunakan pakej `PDPR-SK-Taman-Daya-GitHub-Pages-Gambar-Drive.zip` yang terkini.
