@@ -26,3 +26,11 @@ Kata laluan guru ditetapkan pada **Apps Script → Project Settings → Script P
 Segar semula automatik berjalan setiap 60 saat ketika laman kelihatan. Butang **Segar semula** meminta bacaan baharu tanpa menutup paparan. Google boleh mengambil beberapa minit untuk mengemas kini CSV yang diterbitkan. Pengguna pada pelayar lain melihat perubahan selepas penerbitan itu dan bacaan seterusnya. Aktifkan **Automatically republish when changes are made** pada tetapan Publish to web Google Sheet.
 
 Baca `PANDUAN-CSV.md` untuk butiran tingkah laku cache, status penghantaran dan penyelarasan selepas simpanan.
+
+## Pembetulan semakan guru
+
+Versi ini turut membetulkan sesi guru yang tamat ketika membuka hasil kerja murid. Pasang **Code-Semakan-Guru.gs** pada projek Apps Script dan kemas kini fail laman. Fail backend dibekalkan berasingan, bukan untuk GitHub Pages. Ikuti `PANDUAN-SEMAKAN.md`.
+
+## Semakan pantas
+
+Rekod penghantaran kini mempunyai bintang, markah dan mesej terus pada senarai, carian murid, tapisan status dan 12 rekod setiap halaman. Gambar hanya diminta apabila **Pratonton** ditekan. Dialog menyertakan **Besarkan gambar** dan **Simpan & seterusnya**. Baca `PANDUAN-SEMAKAN-PANTAS.md`.
